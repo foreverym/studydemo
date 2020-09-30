@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="vms">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/vms.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
