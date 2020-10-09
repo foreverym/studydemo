@@ -13,10 +13,10 @@ public class Demo2 {
         Student student3 = new Student(3, "kkk");
         Student student4 = new Student(4, "sss");
         List<Student> students = new ArrayList<>();
-        students.add(student1);
-        students.add(student2);
-        students.add(student3);
-        students.add(student4);
+//        students.add(student1);
+//        students.add(student2);
+//        students.add(student3);
+//        students.add(student4);
 
         File file = new File("/Users/edz/IdeaProjects/wybtest/1.txt");
         FileOutputStream fileOutputStream = null;

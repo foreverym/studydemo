@@ -9,6 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/homework/homework.iml" filepath="$PROJECT_DIR$/homework/homework.iml" />
       <module fileurl="file://$PROJECT_DIR$/javaio/javaio.iml" filepath="$PROJECT_DIR$/javaio/javaio.iml" />
       <module fileurl="file://$PROJECT_DIR$/packagejar/packagejar.iml" filepath="$PROJECT_DIR$/packagejar/packagejar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/socket/socket.iml" filepath="$PROJECT_DIR$/socket/socket.iml" />
       <module fileurl="file://$PROJECT_DIR$/stream/stream.iml" filepath="$PROJECT_DIR$/stream/stream.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/studydemo.iml" filepath="$PROJECT_DIR$/.idea/studydemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/test1/test1.iml" filepath="$PROJECT_DIR$/test1/test1.iml" />
