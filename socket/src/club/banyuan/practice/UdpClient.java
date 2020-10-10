@@ -12,7 +12,7 @@ public class UdpClient {
         String s = scanner.nextLine();
 
         if ("quit".equals(s)) {
-
+            return;
         } else {
             s.trim();
             String[] splitStrings = s.split(" ");

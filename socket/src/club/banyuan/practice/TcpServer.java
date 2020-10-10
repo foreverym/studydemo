@@ -1,7 +1,6 @@
 package club.banyuan.practice;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,6 +13,11 @@ import java.net.Socket;
  */
 public class TcpServer {
 
+    public static final int FIRST_UPPER = 65;
+    public static final int FIRST_LOWER = 97;
+    public static final int NUM_CHARS = 26;
+    public static final int OFFSET = 3;
+
     public static void main(String[] args) {
         ServerSocket serverSocket = null;
         BufferedReader bufferedReader = null;
@@ -22,14 +26,58 @@ public class TcpServer {
             Socket socket = serverSocket.accept();
             bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String s = bufferedReader.readLine();
-
-            
+            System.out.println(s);
+            String length = bufferedReader.readLine();
+            System.out.println(length);
             if ("decode".equals(s)) {
+                int i = bufferedReader.read();
+                while (i != -1) {
+                    char c = (char) i;
+                    if (Character.isLetter((char) i)) {
+                        c = caesarDecode((char) i);
 
+                    }
+                    System.out.print(c);
+                    i = bufferedReader.read();
+                }
+            }
+            if ("encode".equals(s)) {
+                int i = bufferedReader.read();
+                while (i != -1) {
+                    char c = (char) i;
+                    if (Character.isLetter((char) i)) {
+                        c = caesarEncode((char) i);
+
+                    }
+                    System.out.print(c);
+                    i = bufferedReader.read();
+                }
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static char caesarDecode(char ch) {
+        if (Character.isUpperCase(ch)) {
+            return (char) ((ch - Encode.FIRST_UPPER + Encode.NUM_CHARS - Encode.OFFSET) % Encode.NUM_CHARS
+                    + Encode.FIRST_UPPER);
+        } else if (Character.isLowerCase(ch)) {
+            return (char) ((ch - Encode.FIRST_LOWER + Encode.NUM_CHARS - Encode.OFFSET) % Encode.NUM_CHARS
+                    + Encode.FIRST_LOWER);
+        } else {
+            return ch;
+        }
+    }
+
+    public static char caesarEncode(char ch) {
+        if (Character.isUpperCase(ch)) {
+            return (char) ((ch - FIRST_UPPER + OFFSET) % NUM_CHARS + FIRST_UPPER);
+        } else if (Character.isLowerCase(ch)) {
+            return (char) ((ch - FIRST_LOWER + OFFSET) % NUM_CHARS + FIRST_LOWER);
+        } else {
+            return ch;
         }
     }
 

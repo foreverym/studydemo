@@ -1,8 +1,11 @@
 package club.banyuan.practice;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class TcpClient {
@@ -20,20 +23,22 @@ public class TcpClient {
             BufferedReader bufferedReader = null;
             BufferedWriter clientBufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             clientBufferedWriter.write(s);
+            clientBufferedWriter.newLine();
             long length;
             File file = null;
             if ("decode".equals(s)) {
-                file = new File("socket/aliceEncode.code");
-                new BufferedReader(new FileReader(file));
+                file = new File("/Users/edz/gitproject/studydemo/socket/aliceEncode.code");
+                bufferedReader = new BufferedReader(new FileReader(file));
                 length = file.length();
+                System.out.println(length);
                 clientBufferedWriter.write((int)length);
+                clientBufferedWriter.newLine();
                 int i = bufferedReader.read();
                 while (i != -1) {
                     char c = (char) i;
                     if (Character.isLetter((char) i)) {
-                        c = caesarDecode((char) i);
+                        clientBufferedWriter.write(c);
                     }
-                    clientBufferedWriter.write(c);
                     i = bufferedReader.read();
                 }
 
@@ -48,9 +53,8 @@ public class TcpClient {
                 while (i != -1) {
                     char c = (char) i;
                     if (Character.isLetter((char) i)) {
-                        c = caesarEncode((char) i);
+                        clientBufferedWriter.write(c);
                     }
-                    clientBufferedWriter.write(c);
                     i = bufferedReader.read();
                 }
 
