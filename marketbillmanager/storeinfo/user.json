@@ -1,1 +1,1 @@
-[{"id":1,"name":"","pwd":"ss","pwdConfirm":"ss","userType":1},{"id":2,"name":"","pwd":"ss","pwdConfirm":"ss","userType":1},{"id":3,"name":"","pwd":"ss","pwdConfirm":"ss","userType":1},{"id":4,"name":"","pwd":"ss","pwdConfirm":"ss","userType":1}]
+{"idCount":3,"userList":[{"id":2,"name":"u2","pwd":"123456","pwdConfirm":"123456","userType":0,"userTypeStr":"普通用户"}]}

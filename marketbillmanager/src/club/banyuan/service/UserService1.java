@@ -1,6 +1,8 @@
 package club.banyuan.service;
 
-import club.banyuan.PropUtil;
+import club.banyuan.util.PropUtil;
+import club.banyuan.entity.User;
+import club.banyuan.entity.User1;
 import com.alibaba.fastjson.JSONObject;
 
 import java.io.FileInputStream;
@@ -52,7 +54,7 @@ public class UserService1 {
     /**
      *
      */
-    public User1 login(User1 user) {
+    public User login(User user) {
         return null;
     }
 
@@ -77,16 +79,6 @@ public class UserService1 {
 
 
     public static void main(String[] args) {
-        //UserService userService = new UserService();
-        User1 user1 = new User1(1, "", "ss", "ss", 1);
-        User1 user2 = new User1(2, "", "ss", "ss", 1);
-        User1 user3 = new User1(3, "", "ss", "ss", 1);
-        User1 user4 = new User1(4, "", "ss", "ss", 1);
-        userList.add(user1);
-        userList.add(user2);
-        userList.add(user3);
-        userList.add(user4);
-        save();
 
     }
 

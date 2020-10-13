@@ -1,9 +1,8 @@
 package club.banyuan.http;
 
-import club.banyuan.PropUtil;
+import club.banyuan.util.PropUtil;
 import club.banyuan.entity.User;
 import club.banyuan.service.UserService;
-import club.banyuan.service.UserService1;
 import com.alibaba.fastjson.JSONObject;
 import java.io.DataOutputStream;
 import java.io.File;

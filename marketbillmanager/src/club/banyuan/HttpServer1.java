@@ -1,6 +1,8 @@
 package club.banyuan;
 
+import club.banyuan.entity.User;
 import club.banyuan.service.UserService1;
+import club.banyuan.util.PropUtil;
 import com.alibaba.fastjson.JSONObject;
 
 import java.io.BufferedReader;
@@ -12,9 +14,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class HttpServer1 {
 
@@ -77,7 +76,7 @@ public class HttpServer1 {
                                 char[] chars = new char[contentLength];
                                 int read = reader.read(chars);
                                 String data = new String(chars, 0, read);
-                                User1 user = JSONObject.parseObject(data, User1.class);
+                                User user = JSONObject.parseObject(data, User.class);
                                 if (user == null) {
                                     //抛出异常
                                 } else {
@@ -85,24 +84,24 @@ public class HttpServer1 {
                                 }
                                 break;
                             case "/server/user/list":
-                                List<User1> userList = userService.getUserList();
-                                Map<String, List<User1>> userMap = new HashMap<>();
-                                userMap.put("data", userList);
-                                String userMapJsonString = JSONObject.toJSONString(userMap);
+//                                List<User> userList = userService.getUserList();
+//                                Map<String, List<User1>> userMap = new HashMap<>();
+//                                userMap.put("data", userList);
+                                //String userMapJsonString = JSONObject.toJSONString(userMap);
                                 dataOutputStream.writeBytes("HTTP1.1 200 OK\n");
-                                dataOutputStream.writeBytes("Content-Length: " + userMapJsonString.getBytes().length + "\n");
-                                dataOutputStream.writeBytes("Content-Type: application/json; charset=utf-8\n");
-                                dataOutputStream.writeBytes("\n");
-                                dataOutputStream.writeBytes(userMapJsonString);
+//                                dataOutputStream.writeBytes("Content-Length: " + userMapJsonString.getBytes().length + "\n");
+//                                dataOutputStream.writeBytes("Content-Type: application/json; charset=utf-8\n");
+//                                dataOutputStream.writeBytes("\n");
+//                                dataOutputStream.writeBytes(userMapJsonString);
                                 dataOutputStream.flush();
                                 break;
                             case "/server/user/add":
                                 char[] chars1 = new char[contentLength];
                                 int read1 = reader.read(chars1);
                                 String data1 = new String(chars1, 0, read1);
-                                User1 user1 = JSONObject.parseObject(data1, User1.class);
-                                System.out.println(user1);
-                                userService.addUser(user1);
+                                //User1 user1 = JSONObject.parseObject(data1, User1.class);
+//                                System.out.println(user1);
+//                                userService.addUser(user1);
                                 break;
                             case "/server/user/update":
 

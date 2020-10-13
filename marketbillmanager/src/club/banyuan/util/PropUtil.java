@@ -1,4 +1,4 @@
-package club.banyuan;
+package club.banyuan.util;
 
 import java.io.IOException;
 import java.io.InputStream;

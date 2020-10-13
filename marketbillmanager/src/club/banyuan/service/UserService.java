@@ -1,8 +1,8 @@
 package club.banyuan.service;
 
-import club.banyuan.PropUtil;
+import club.banyuan.util.PropUtil;
 import club.banyuan.entity.User;
-import com.alibaba.fastjson.JSONArray;
+import club.banyuan.http.BadReqException;
 import com.alibaba.fastjson.JSONObject;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,7 +27,12 @@ public class UserService {
     try (FileInputStream fileInputStream = new FileInputStream(filePath)) {
       byte[] bytes = fileInputStream.readAllBytes();
       String jsonStr = new String(bytes);
-      UserService userService = JSONObject.parseObject(jsonStr, UserService.class);
+      UserService userService = null;
+      if (jsonStr == null || jsonStr.length() == 0) {
+        userService = new UserService();
+      } else {
+        userService = JSONObject.parseObject(jsonStr, UserService.class);
+      }
       idCount = userService.getIdCount();
       userList = userService.getUserList();
     } catch (IOException e) {
@@ -90,14 +95,13 @@ public class UserService {
    * @param user
    */
   public void addUser(User user) {
-
     validateUserAdd(user);
-
     user.setId(idCount++);
     userList.add(user);
     // 添加完成后写入硬盘
     save();
   }
+
 
   private void validateUserAdd(User user) {
     if (!user.getPwd().equals(user.getPwdConfirm())) {
@@ -188,7 +192,39 @@ public class UserService {
     save();
   }
 
+  /**
+   * 校验用户名密码和确认密码一致
+   * <p>
+   * 校验用户名不能和除了当前用户id以外的其他用户名一致
+   *
+   * @param user
+   */
   private void validateUserUpdate(User user) {
-    // TODO
+    validatePwdConfirm(user);
+
+    for (User one : userList) {
+      if (one.getId() != user.getId() && one.getName().equals(user.getName())) {
+        throw new BadReqException("用户名已存在!");
+      }
+    }
+
   }
+
+
+  private void validatePwdConfirm(User user) {
+    if (!user.getPwd().equals(user.getPwdConfirm())) {
+      throw new BadReqException("两次输入的密码不一致！");
+    }
+  }
+
+
+  public void deleteUser(User user) {
+    boolean removed = userList.removeIf(one -> one.getId() == user.getId());
+    if (removed) {
+      save();
+    } else {
+      throw new BadReqException("用户不存在,id:" + user.getId());
+    }
+  }
+
 }
