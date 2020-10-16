@@ -1,5 +1,6 @@
 package club.banyuan.http;
 
+import club.banyuan.entity.Request;
 import club.banyuan.util.PropUtil;
 import club.banyuan.entity.User;
 import club.banyuan.service.UserService;

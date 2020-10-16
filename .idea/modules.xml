@@ -2,14 +2,18 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/annotation/annotation.iml" filepath="$PROJECT_DIR$/annotation/annotation.iml" />
       <module fileurl="file://$PROJECT_DIR$/carrent/carrent.iml" filepath="$PROJECT_DIR$/carrent/carrent.iml" />
       <module fileurl="file://$PROJECT_DIR$/container/container.iml" filepath="$PROJECT_DIR$/container/container.iml" />
       <module fileurl="file://$PROJECT_DIR$/container/src/container1.iml" filepath="$PROJECT_DIR$/container/src/container1.iml" />
       <module fileurl="file://$PROJECT_DIR$/file/file.iml" filepath="$PROJECT_DIR$/file/file.iml" />
       <module fileurl="file://$PROJECT_DIR$/homework/homework.iml" filepath="$PROJECT_DIR$/homework/homework.iml" />
       <module fileurl="file://$PROJECT_DIR$/javaio/javaio.iml" filepath="$PROJECT_DIR$/javaio/javaio.iml" />
+      <module fileurl="file://$PROJECT_DIR$/managesystem/managesystem.iml" filepath="$PROJECT_DIR$/managesystem/managesystem.iml" />
       <module fileurl="file://$PROJECT_DIR$/marketbillmanager/marketbillmanager.iml" filepath="$PROJECT_DIR$/marketbillmanager/marketbillmanager.iml" />
       <module fileurl="file://$PROJECT_DIR$/packagejar/packagejar.iml" filepath="$PROJECT_DIR$/packagejar/packagejar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/reflect/reflect.iml" filepath="$PROJECT_DIR$/reflect/reflect.iml" />
+      <module fileurl="file://$PROJECT_DIR$/regex/regex.iml" filepath="$PROJECT_DIR$/regex/regex.iml" />
       <module fileurl="file://$PROJECT_DIR$/socket/socket.iml" filepath="$PROJECT_DIR$/socket/socket.iml" />
       <module fileurl="file://$PROJECT_DIR$/stream/stream.iml" filepath="$PROJECT_DIR$/stream/stream.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/studydemo.iml" filepath="$PROJECT_DIR$/.idea/studydemo.iml" />
