@@ -1,14 +1,8 @@
 package club.banyuan.http;
 
 import club.banyuan.constant.Constant;
-import club.banyuan.entity.Bill;
 import club.banyuan.entity.Request;
-import club.banyuan.service.BillService;
 import club.banyuan.util.PropUtil;
-import club.banyuan.entity.Provider;
-import club.banyuan.entity.User;
-import club.banyuan.service.ProviderService;
-import club.banyuan.service.UserService;
 import club.banyuan.util.ServerSession;
 import com.alibaba.fastjson.JSONObject;
 
@@ -34,12 +28,6 @@ import java.util.Map;
  */
 public class HttpServer {
 
-    /**
-     * 引入UserService对象，处理用户相关的业务逻辑
-     */
-    private static UserService userService = new UserService();
-    private static ProviderService providerService = new ProviderService();
-    private static BillService billService = new BillService();
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(9000)) {
@@ -50,6 +38,7 @@ public class HttpServer {
                 OutputStream outputStream = null;
                 Socket socket = null;
                 Request request = null;
+                DispatchRequest dispatchRequest = null;
                 try {
                     socket = serverSocket.accept();
                     System.out.println("客户端接入");
@@ -59,14 +48,15 @@ public class HttpServer {
 
 
                     // 和前台代码匹配的。以/server 路径开头的，表示需要进行数据处理
-                    if (url.startsWith("/server")) {
+                    if (url.startsWith("/admin")) {
                         // 处理数据
-                        validateUserAuth(request);
-                        Object rlt = dispatchRequest(request);
+                        //validateUserAuth(request);
+                        dispatchRequest = new DispatchRequest();
+                        Object rlt = dispatchRequest.dispatchAdminRequest(request);
                         sendJsonResponse(RespStatus.OK, outputStream, rlt, request);
                     } else {
                         // 没有以server 开头，表示请求的是资源，html、css、js、图片等文件，返回文件
-                        validatePageAuth(request);
+                        //validatePageAuth(request);
                         sendStaticFile(outputStream, url, request);
                     }
                 } catch (BadReqException e) {
@@ -138,115 +128,7 @@ public class HttpServer {
     }
 
 
-    /**
-     * 根据Url不同，使用不同的方法进行处理
-     *
-     * @param request
-     */
-    private static Object dispatchRequest(Request request) {
-        String url = request.getUrl();
-        switch (url) {
-            case "/server/user/login": {
-                User user = request.parseJsonObject(User.class);
-                User loginUser = userService.login(user);
-                if (loginUser == null) {
-                    // 登录失败
-                    throw new BadReqException("用户名或密码错误");
-                } else {
-                    // 登录成功
-                    // sendSuccess(outputStream);
-                    //写入cookie
-                    request.getSession().put(Constant.USER_INFO, loginUser);
-                }
-            }
-            break;
-            case "/server/user/list": {
-                User user = request.parseJsonObject(User.class);
-                return userService.getUserList(user);
-            }
 
-            case "/server/user/add": {
-                User user = request.parseJsonObject(User.class);
-                userService.addUser(user);
-            }
-            break;
-
-            case "/server/user/get": {
-                // 根据ID 查询单个用户，前台发送 数据只包含id的信息，但是我们可以使用user对象来接收这个id信息
-                // user对象中只有id是有用的
-                User user = request.parseJsonObject(User.class);
-                return userService.getUserById(user);
-            }
-            case "/server/user/update": {
-                User user = request.parseJsonObject(User.class);
-                userService.updateUser(user);
-            }
-            break;
-
-            case "/server/user/delete": {
-                User user = request.parseJsonObject(User.class);
-                userService.deleteUser(user);
-            }
-            break;
-
-            case "/server/provider/add": {
-                Provider provider = request.parseJsonObject(Provider.class);
-                providerService.addProvider(provider);
-            }
-            break;
-
-            case "/server/provider/update": {
-                Provider provider = request.parseJsonObject(Provider.class);
-                providerService.updateProvider(provider);
-            }
-            break;
-
-            case "/server/provider/list": {
-                Provider provider = request.parseJsonObject(Provider.class);
-                return providerService.getListProvider(provider);
-            }
-
-            case "/server/provider/get": {
-                Provider provider = request.parseJsonObject(Provider.class);
-                return providerService.getProviderInfo(provider);
-            }
-
-            case "/server/provider/delete": {
-                Provider provider = request.parseJsonObject(Provider.class);
-                providerService.deleteProvider(provider);
-            }
-            break;
-
-            case "/server/bill/add": {
-                Bill bill = request.parseJsonObject(Bill.class);
-                billService.addBill(bill);
-            }
-            break;
-
-            case "/server/bill/update": {
-                Bill bill = request.parseJsonObject(Bill.class);
-                billService.updateBill(bill);
-            }
-            break;
-
-            case "/server/bill/get": {
-                Bill bill = request.parseJsonObject(Bill.class);
-                return billService.getBillInfo(bill);
-            }
-
-            case "/server/bill/list": {
-                Bill bill = request.parseJsonObject(Bill.class);
-                return billService.getListBill(bill);
-            }
-            default:
-                // TODO 异常
-                break;
-
-        }
-
-        // 如果请求处理数据没有特殊的返回对象，统一返回一个操作成功的字符串
-        return "操作成功";
-    }
 
     private static void sendStaticFile(OutputStream outputStream, String url, Request request) throws IOException {
         File file = new File(PropUtil.getProp("page.root"), url);

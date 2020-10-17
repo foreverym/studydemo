@@ -17,6 +17,7 @@
       <module fileurl="file://$PROJECT_DIR$/socket/socket.iml" filepath="$PROJECT_DIR$/socket/socket.iml" />
       <module fileurl="file://$PROJECT_DIR$/stream/stream.iml" filepath="$PROJECT_DIR$/stream/stream.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/studydemo.iml" filepath="$PROJECT_DIR$/.idea/studydemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/systemmodel/systemmodel.iml" filepath="$PROJECT_DIR$/systemmodel/systemmodel.iml" />
       <module fileurl="file://$PROJECT_DIR$/test1/test1.iml" filepath="$PROJECT_DIR$/test1/test1.iml" />
       <module fileurl="file://$PROJECT_DIR$/thread/thread.iml" filepath="$PROJECT_DIR$/thread/thread.iml" />
       <module fileurl="file://$PROJECT_DIR$/vending-machine/vending-machine.iml" filepath="$PROJECT_DIR$/vending-machine/vending-machine.iml" />

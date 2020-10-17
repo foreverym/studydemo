@@ -1,47 +1,80 @@
-$(function () {
-  $(document).ajaxError(function (e, xhr) {
-    alert("操作失败:" + JSON.parse(xhr.responseText).data);
-  });
+function getCurrentDateTime() {
+  var date = new Date();
+  var year = date.getFullYear();
+  var month = date.getMonth() + 1;
+  var day = date.getDate();
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var seconds = date.getSeconds();
+  return year + "-" + formatZero(month) + "-" + formatZero(day) + " "
+      + formatZero(hours) + ":" + formatZero(minutes) + ":" + formatZero(
+          seconds);
+}
 
-  $("#quit-btn").click(function () {
-    var status = confirm("确定退出 ?");
-    if (!status) {
+function getCurrentDate() {
+  var date = new Date();
+  var year = date.getFullYear();
+  var month = date.getMonth() + 1;
+  var day = date.getDate();
+  return year + "-" + formatZero(month) + "-" + formatZero(day);
+}
+
+function formatZero(n) {
+  if (n >= 0 && n <= 9) {
+    return "0" + n;
+  } else {
+    return n;
+  }
+}
+
+$.extend($.fn.datagrid.defaults, {
+  // loader 使用json数据提交
+  loader: function (param, success, error) {
+    var opts = $(this).datagrid('options');
+    if (!opts.url) {
       return false;
     }
-
     $.ajax({
-      type: 'POST',
-      contentType: "application/json;charset=UTF-8",
-      url: "server/user/quit",
-      success: function (msg) {
-        window.location.href = "login.html";
+      type: opts.method,
+      url: opts.url,
+      contentType: 'application/json; charset=utf-8;',
+      data: formParam2JsonString(param),
+      dataType: 'json',
+      success: function (data) {
+        success(data);
+      },
+      error: function (jqXHR, textStatus, errorThrown){
+        error(jqXHR, textStatus, errorThrown);
       }
     });
-  });
-
+  },
+  // ajaxError 也会触发，这里也会触发，重复提示
+  onLoadError: function (data) {
+    // $.messager.alert('提示信息', '请求异常', 'info');
+    $(this).datagrid('loadData', {total: 0, rows: []});
+  }
+  // ajax 提交 500 后， 先走loadFilter 然后走onLoadError
+  // loadFilter: function (data) {
+  //   console.log("loadFilter");
+  //   console.log(data);
+  //   if (data.code != 0) {
+  //     var push = {
+  //       "total": 0,
+  //       "rows": ""// 当为[]会出现空的两行
+  //     };
+  //     $.messager.alert("请求失败", data.message);
+  //     return push;
+  //   } else {
+  //     return data;
+  //   }
+  // },
 });
 
-function bindFormAddSwitch() {
-  $("#add-btn").click(function () {
-    $('#modify-form')[0].reset();
-    $("#flag").val("add");
-    $("#modify-section").show();
-    $("#list-section").hide();
-  });
-}
+$(document).ajaxError(function (e, xhr) {
+  let data = JSON.parse(xhr.responseText)
+  $.messager.alert("请求失败", data.message);
+});
 
-function bindFormBackSwitch() {
-  $("#back-btn").click(function () {
-    $('#modify-form')[0].reset();
-    $("#modify-section").hide();
-    $("#list-section").show();
-  });
-}
-
-/*
-将指定id的form 内容转换成json字符串
-返回json字符串
- */
 function form2JsonString(formId) {
   // 序列化成 key=value&key1=value1 的字符串
   let paramArray = $('#' + formId).serializeArray();
@@ -53,92 +86,9 @@ function form2JsonString(formId) {
   return JSON.stringify(jsonObj);
 }
 
-function getURLParameter(sParam) {
-  let sPageURL = window.location.search.substring(1);
-  let sURLVariables = sPageURL.split('&');
-  for (let i = 0; i < sURLVariables.length; i++) {
-    let sParameterName = sURLVariables[i].split('=');
-    if (sParameterName[0] === sParam) {
-      return sParameterName[1];
-    }
-  }
-}
-
-function getCurrentUser() {
-  $.ajax({
-    type: "post",
-    contentType: "application/json;charset=UTF-8",
-    url: "server/user/getInfo",
-    success: function (result) {
-      if (!$.isEmptyObject(result)) {
-
-        $("#welcome-user-name").text(result.data);
-      } else {
-        alert("查询用户失败");
-      }
-    }
-  });
-}
-
-function buildRow(obj, nodeTemplate) {
-  let lineNode = nodeTemplate.clone();
-  // 找到以属性名作为class的标签，将text替换为属性的值
-  for (let prop in obj) {
-    lineNode.find("." + prop).text(obj[prop]);
-    lineNode.show(); // clone 的节点默认是隐藏的，需要让添加的行显示
-  }
-  return lineNode;
-}
-
-function appendList(result) {
-  let nodeTemplate = $("#list-form-title").clone();
-  // clone 之后不需要id属性
-  nodeTemplate.removeAttr("id");
-  // result 返回的是一个 obj 数组，这里遍历数组，将每个provider添加到表格中
-  for (let index in result) {
-    let lineNode = buildRow(result[index], nodeTemplate);
-    $("#list-body").append(lineNode);
-  }
-}
-
-function refreshList(module) {
-  $.ajax({
-    type: "post",
-    contentType: "application/json;charset=UTF-8",
-    url: "server/" + module + "/list",
-    data: form2JsonString("search-form"),
-    success: function (result) {
-      // 清空表格
-      $("#list-form-title").nextAll().remove();
-      appendList(result.data);
-      $("#modify-section").hide();
-      $("#list-section").show();
-    }
-  });
-}
-
-function postModifyForm(module, updateFlag) {
-  let url = updateFlag === "update" ? "server/" + module + "/update" : "server/"
-      + module + "/add";
-  $.ajax({
-    type: "post",
-    contentType: "application/json;charset=UTF-8",
-    url: url,
-    data: form2JsonString("modify-form"),
-    success: function () {
-      refreshList(module);
-    }
-  });
-}
-
-function postDeleteRow(module, id) {
-  $.ajax({
-    type: "post",
-    contentType: "application/json;charset=UTF-8",
-    url: "server/" + module + "/delete",
-    data: JSON.stringify({"id": id}),
-    success: function (result) {
-      refreshList(module);
-    }
-  });
+/*
+ * datagrid 返回的数据已经是json格式了，转成字符串
+ */
+function formParam2JsonString(formParam) {
+  return JSON.stringify(formParam);
 }
