@@ -2,6 +2,7 @@ package club.banyuan.http;
 
 import club.banyuan.constant.Constant;
 import club.banyuan.entity.Request;
+import club.banyuan.exception.BadReqException;
 import club.banyuan.util.PropUtil;
 import club.banyuan.util.ServerSession;
 import com.alibaba.fastjson.JSONObject;
@@ -33,42 +34,67 @@ public class HttpServer {
         try (ServerSocket serverSocket = new ServerSocket(9000)) {
 
             System.out.println("创建服务器");
+            DispatchRequest dispatchRequest = null;
 
             while (true) {
                 OutputStream outputStream = null;
                 Socket socket = null;
                 Request request = null;
-                DispatchRequest dispatchRequest = null;
                 try {
                     socket = serverSocket.accept();
                     System.out.println("客户端接入");
                     request = Request.parse(socket.getInputStream());
                     outputStream = socket.getOutputStream();
                     String url = request.getUrl();
-
-
                     // 和前台代码匹配的。以/server 路径开头的，表示需要进行数据处理
-                    if (url.startsWith("/admin")) {
+                    if (url.startsWith("/admin/")) {
                         // 处理数据
-                        //validateUserAuth(request);
+                        validateUserAuth(request);
                         dispatchRequest = new DispatchRequest();
                         Object rlt = dispatchRequest.dispatchAdminRequest(request);
                         sendJsonResponse(RespStatus.OK, outputStream, rlt, request);
-                    } else {
-                        // 没有以server 开头，表示请求的是资源，html、css、js、图片等文件，返回文件
-                        //validatePageAuth(request);
+                    }
+                    if (url.startsWith("/dept/")) {
+                        validateUserAuth(request);
+                        dispatchRequest = new DispatchRequest();
+                        Object rlt = dispatchRequest.dispatchDeptRequest(request);
+                        sendJsonResponse(RespStatus.OK, outputStream, rlt, request);
+                    }
+                    if (url.startsWith("/position/")) {
+                        dispatchRequest = new DispatchRequest();
+                        Object rlt = dispatchRequest.dispatchPositionRequest(request);
+                        sendJsonResponse(RespStatus.OK, outputStream, rlt, request);
+                    }
+                    if (url.startsWith("/empl/")) {
+                        dispatchRequest = new DispatchRequest();
+                        Object rlt = dispatchRequest.dispatchEmployeeRequest(request);
+                        sendJsonResponse(RespStatus.OK, outputStream, rlt, request);
+                    }
+
+                    else {
+                        validatePageAuth(request);
                         sendStaticFile(outputStream, url, request);
                     }
                 } catch (BadReqException e) {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("code",1);
+                    response.put("message", e.getMessage());
                     e.printStackTrace();
-                    sendJsonResponse(RespStatus.BAD_REQUEST, outputStream, e.getMessage(), request);
+                    sendJsonResponse(RespStatus.BAD_REQUEST, outputStream, response, request);
+                } catch (RedirectException e) {
+                    sendRedirectResponse(RespStatus.REDIRECT, outputStream, e.getMessage(), request);
                 } catch (Exception e) {
                     // 服务器在处理请求的时候出现了异常
                     e.printStackTrace();
-                    sendJsonResponse(RespStatus.INTERNAL_SERVER_ERROR, outputStream, e.getMessage(), request);
+                    //sendJsonResponse(RespStatus.INTERNAL_SERVER_ERROR, outputStream, e.getMessage(), request);
                     // TODO 返回一个服务器异常状态码
                 } finally {
                     if (socket != null) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         socket.close();
                     }
                 }
@@ -80,11 +106,9 @@ public class HttpServer {
     }
 
 
-    private static void sendJsonResponse(RespStatus status, OutputStream outputStream, Object msg, Request request)
+    private static void sendJsonResponse(RespStatus status, OutputStream outputStream, Object response, Request request)
             throws IOException {
-        Map<String, Object> rlt = new HashMap<>();
-        rlt.put("data", msg);
-        byte[] bytes = JSONObject.toJSONString(rlt).getBytes();
+        byte[] bytes = JSONObject.toJSONString(response).getBytes();
         DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
         dataOutputStream.writeBytes(status.getMsg());
         dataOutputStream.writeBytes("Content-Length: " + bytes.length + "\n");
@@ -92,6 +116,15 @@ public class HttpServer {
         writeCookie(dataOutputStream, request);
         dataOutputStream.writeBytes("\n");
         dataOutputStream.write(bytes);
+    }
+
+    private static void sendRedirectResponse(RespStatus status, OutputStream outputStream,
+                                             String message, Request request) throws IOException {
+        DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
+        dataOutputStream.writeBytes(status.getMsg());
+        dataOutputStream.writeBytes("Location: http://" + request.getHost() + message + "\n");
+        dataOutputStream.writeBytes("\n");
+        dataOutputStream.flush();
     }
 
     /**
@@ -103,7 +136,7 @@ public class HttpServer {
         String url = request.getUrl();
         // 登录页面不需要做校验， html结尾的需要做校验
         if (url.endsWith(".html") && !url.equals("/login.html")) {
-            Object o = request.getSession().get(Constant.USER_INFO);
+            Object o = request.getSession().get(Constant.Admin_INFO);
             if (o == null) {
                 throw new RedirectException("/login.html");
             }
@@ -120,7 +153,7 @@ public class HttpServer {
         // 除了login接口，其他的接口，都需要用户已经登录
         // 从request中获取session，查看session是否有用户登录数据
         if (!url.endsWith("login")) {
-            Object o = request.getSession().get(Constant.USER_INFO);
+            Object o = request.getSession().get(Constant.Admin_INFO);
             if (o == null) {
                 throw new BadReqException("用户未登录");
             }
@@ -146,7 +179,7 @@ public class HttpServer {
             // bytes数组
             dataOutputStream.writeBytes("HTTP/1.1 200 OK\n");
             dataOutputStream.writeBytes("Content-Length: " + fileInputStream.available() + "\n");
-            writeCookie(dataOutputStream, request);
+            //writeCookie(dataOutputStream, request);
             // html 资源 给定 Content-type  text/html
             // css 资源 给定 Content-type text/css
             if (url.endsWith(".html")) {
@@ -155,6 +188,7 @@ public class HttpServer {
                 dataOutputStream.writeBytes("Content-Type: text/css; charset=utf-8;\n");
             }
             dataOutputStream.writeBytes("\n");
+            //byte[1024] bytes
             dataOutputStream.write(fileInputStream.readAllBytes());
             dataOutputStream.flush();
         }

@@ -3,7 +3,8 @@ package club.banyuan.http;
 public enum RespStatus {
   OK("200 OK"),
   BAD_REQUEST("400 Bad request"),
-  INTERNAL_SERVER_ERROR("500 Internal Server Error"),
+  REDIRECT("302 Found"),
+  INTERNAL_SERVER_ERROR("500 Internal Server Error")
   //
   ;
 

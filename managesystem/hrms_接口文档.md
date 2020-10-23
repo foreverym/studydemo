@@ -140,8 +140,8 @@ String data = toJsonString(map);
 操作成功：{"total":3,"code":0,"rows":[{"name":"员工","id":1,"description":"职员"},{"name":"组长","id":2,"description":"管理职员"},{"name":"部长","id":3,"description":"管理组长"}],"message":""}
         total: 总的记录条数
         code：0 表示操作成功
-        rows：展示记录的列表，是一个对象集合
-            rows里面的每一个元素 {"name":"员工","id":1,"description":"职员"}
+        rows：展示记录的列表，是一个对象集合"name":"员工","id":1,"description
+            rows里面的每一个元素 {":"职员"}
                 name: 置为名称
                 id：唯一标识
                 description: 职位描述
